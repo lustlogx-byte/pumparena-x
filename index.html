@@ -6,51 +6,123 @@
 <title>PumpArena X</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <style>
-:root{--bg:#0b0e11;--panel:#11161c;--accent:#f0b90b;--text:#eaecef}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial}
+:root{
+--bg:#0b0e1a;
+--panel:#12162a;
+--accent:#7c3aed; /* fire purple */
+--accent2:#c084fc;
+--text:#f1f1f5;
+--sub:#a1a1aa;
+}
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial;
+}
 header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:14px;
-background:#11161c;
-color:#f0b90b;
-font-weight:600;
+padding:16px;
+background:linear-gradient(135deg,#7c3aed,#c084fc);
+color:white;
+font-weight:700;
+font-size:18px;
 letter-spacing:0.5px;
-box-shadow:0 2px 6px rgba(0,0,0,0.4);
+box-shadow:0 4px 20px rgba(124,58,237,0.4);
 }
 .tab{display:none;padding:12px}
 .active{display:block}
 .panel{
-background:#11161c;
-border-radius:16px;
-padding:14px;
+background:var(--panel);
+border-radius:18px;
+padding:16px;
 margin-bottom:70px;
-box-shadow:0 4px 12px rgba(0,0,0,0.4);
+box-shadow:0 6px 25px rgba(0,0,0,0.5);
+border:1px solid rgba(124,58,237,0.2);
 }
-.navbar{position:fixed;bottom:0;width:100%;display:flex;background:#11161c}
+.navbar{
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+background:#0f1222;
+border-top:1px solid rgba(124,58,237,0.2);
+}
+.navbar button{
+flex:1;
+padding:14px;
+background:none;
+border:none;
+color:var(--sub);
+font-size:13px;
+}
+.navbar button.active{
+color:var(--accent);
+font-weight:600;
+}
+.navbar button{
+flex:1;
+padding:12px;
+background:none;
+border:none;
+color:var(--sub);
+font-size:12px;
+}
+.navbar button.active{
+color:var(--accent);
+font-weight:600;
+}
 .navbar button{flex:1;padding:12px;background:none;border:none;color:#888}
 .navbar button.active{color:var(--accent)}
 .btnRow{display:flex;gap:8px;margin:10px 0}
 .btnRow button{
 flex:1;
-padding:14px;
+padding:16px;
 border:none;
-border-radius:12px;
-background:#1a1f26;
+border-radius:14px;
+background:#1a1f3a;
 color:white;
 font-weight:600;
-letter-spacing:0.3px;
-transition:0.15s;
+font-size:14px;
+}
+.btnRow button:active{
+transform:scale(0.96);
+opacity:0.85;
+}
+.btnRow button:active{
+transform:scale(0.97);
+opacity:0.8;
 }
 .btnRow button:active{
 transform:scale(0.97);
 opacity:0.9;
 }
 .buy{
-background:linear-gradient(135deg,#0ecb81,#0bbf78);
+background:linear-gradient(135deg,#22c55e,#4ade80);
 color:black;
+font-weight:700;
+}
+.sell{
+background:linear-gradient(135deg,#ef4444,#f87171);
+color:white;
+font-weight:700;
+}
+.sellAllBtn{
+background:linear-gradient(135deg,#f0b90b,#d9a309);
+color:black;
+width:100%;
+padding:18px;
+border:none;
+border-radius:12px;
 font-weight:bold;
+margin-top:10px;
+margin-bottom:20px; /* added spacing */
+letter-spacing:0.5px;
+}
+.sellAllBtn:active{
+transform:scale(0.96);
 }
 .sell{
 background:linear-gradient(135deg,#f6465d,#d93a50);
@@ -115,11 +187,7 @@ transform:scale(0.97);
 </head>
 <body>
 
-<div id="loginScreen" style="position:fixed;inset:0;background:#0b0e11;display:flex;flex-direction:column;justify-content:center;align-items:center;">
-<h2 style="color:#f0b90b;">PumpArena</h2>
-<input id="username" placeholder="Username" style="padding:12px;margin:10px;border-radius:10px;border:1px solid #222;background:#11161c;color:white;">
-<button onclick="login()" style="padding:12px 20px;border:none;border-radius:10px;background:#f0b90b;">Enter</button>
-</div>
+
 
 <header>
 <div>PumpArena X</div>
@@ -148,8 +216,17 @@ transform:scale(0.97);
 <button class="sell" onclick="sell()">Sell</button>
 </div>
 <button class="sellAllBtn" onclick="sellAll()">Sell All</button>
-<div>Price: $<span id="price"></span></div>
-<div>Total: $<span id="total"></span></div>
+<div class="panel" style="margin-top:16px;">
+  <div style="font-size:13px;color:var(--sub)">Trade Summary</div>
+  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:15px;">
+    <span>Price</span>
+    <span>$<span id="price"></span></span>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:15px;font-weight:600;">
+    <span>Total</span>
+    <span>$<span id="total"></span></span>
+  </div>
+</div>
 </div>
 </div>
 
@@ -163,53 +240,47 @@ transform:scale(0.97);
 </div>
 
 <script>
-let prices={},balance=10000,portfolio={},currentUser="";
+let prices={}, balance=100, portfolio={};
 const coins=["BTCUSDT","ETHUSDT","SOLUSDT"];
 const coinSel=document.getElementById("coin");
 const qty=document.getElementById("qty");
 
-coins.forEach(c=>{let o=document.createElement("option");o.value=c;o.text=c;coinSel.appendChild(o);});
+coins.forEach(c=>{
+ let o=document.createElement("option");
+ o.value=c; o.text=c;
+ coinSel.appendChild(o);
+});
 
-function tab(id,btn){
- document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- document.querySelectorAll('.navbar button').forEach(b=>b.classList.remove('active'));
- btn.classList.add('active');
+function loadUser(){
+ document.getElementById("userLabel").innerText = localStorage.getItem("user") || "guest";
 }
 
 async function fetchPrices(){
  try{
   let r=await fetch("https://api.binance.com/api/v3/ticker/price");
   let d=await r.json();
-  d.forEach(x=>{if(coins.includes(x.symbol)) prices[x.symbol]=Number(x.price);});
-  render();
- }catch(e){console.log(e);}
+  d.forEach(x=>{ if(coins.includes(x.symbol)) prices[x.symbol]=Number(x.price); });
+  renderMarkets();
+  update();
+ }catch(e){ console.log(e); }
 }
 
-function render(){
+function renderMarkets(){
  let m=document.getElementById("markets");
  m.innerHTML="";
-
  coins.forEach(c=>{
-  let div=document.createElement("div");
-  div.className="marketRow";
-
-  div.innerHTML = '<div class="marketLeft">'
-    + '<div class="marketSymbol">'+c.replace("USDT","")+'</div>'
-    + '<div class="marketPair">USDT</div>'
-    + '</div>'
-    + '<div class="marketPrice">$'+(prices[c]||0).toFixed(2)+'</div>';
-
-  div.onclick=function(){
-    coinSel.value=c;
-    update();
-    loadChart();
-  };
-
-  m.appendChild(div);
+  let row=document.createElement("div");
+  row.className="marketRow";
+  row.innerHTML=`
+   <div class="marketLeft">
+    <div class="marketSymbol">${c}</div>
+    <div class="marketPair">USDT</div>
+   </div>
+   <div class="marketPrice">$${(prices[c]||0).toFixed(2)}</div>
+  `;
+  row.onclick=()=>{coinSel.value=c;update();loadChart();};
+  m.appendChild(row);
  });
-
- update();
 }
 
 function update(){
@@ -222,29 +293,77 @@ function update(){
 
 function buy(){
  let c=coinSel.value,q=Number(qty.value),p=prices[c];
- if(balance>=q*p){portfolio[c]=(portfolio[c]||0)+q;balance-=q*p;save();update();}
+ if(balance>=q*p){portfolio[c]=(portfolio[c]||0)+q;balance-=q*p;update();}
 }
 
 function sell(){
  let c=coinSel.value,q=Number(qty.value),p=prices[c];
- if((portfolio[c]||0)>=q){portfolio[c]-=q;balance+=q*p;save();update();}
+ if((portfolio[c]||0)>=q){portfolio[c]-=q;balance+=q*p;update();}
 }
 
 function sellAll(){
  let c=coinSel.value,q=portfolio[c]||0,p=prices[c];
- if(q>0){balance+=q*p;delete portfolio[c];save();update();}
+ if(q>0){balance+=q*p;delete portfolio[c];update();}
 }
 
 function renderAssets(){
  let d=document.getElementById("assets");
- d.innerHTML="Balance: $"+balance.toFixed(2);
+ d.innerHTML="";
+
+ // Balance section
+ let balanceBox=document.createElement("div");
+ balanceBox.className="panel";
+ balanceBox.innerHTML=`<div style="font-size:14px;color:var(--sub)">Balance</div>
+ <div style="font-size:24px;font-weight:700;margin-top:6px">$${balance.toFixed(2)}</div>`;
+
+ // PNL section
+ let pnlBox=document.createElement("div");
+ pnlBox.className="panel";
+
+ let totalValue=0;
  Object.keys(portfolio).forEach(c=>{
-  let v=portfolio[c]*(prices[c]||0);
-  let div=document.createElement("div");
-  div.className="assetCard";
-  div.innerText=c+" $"+v.toFixed(2);
-  d.appendChild(div);
+  totalValue += (portfolio[c]||0)*(prices[c]||0);
  });
+
+ let startingBalance = 100;
+ let currentEquity = balance + totalValue;
+ let pnl = currentEquity - startingBalance;
+ let pnlPercent = ((pnl/startingBalance)*100);
+ let pnlColor = pnl >= 0 ? "#22c55e" : "#ef4444";
+
+ pnlBox.innerHTML=`
+ <div style="font-size:14px;color:var(--sub)">Profit / Loss</div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+   <div style="font-size:22px;font-weight:700;color:${pnlColor}">$${pnl.toFixed(2)}</div>
+   <div style="font-size:14px;color:${pnlColor}">${pnlPercent.toFixed(2)}%</div>
+ </div>
+ `;
+
+ // Portfolio section
+ let portfolioBox=document.createElement("div");
+ portfolioBox.className="panel";
+ portfolioBox.innerHTML=`<div style="font-size:14px;color:var(--sub);margin-bottom:8px">Your Assets</div>`;
+
+ if(Object.keys(portfolio).length===0){
+  let empty=document.createElement("div");
+  empty.style.color="var(--sub)";
+  empty.innerText="No assets yet";
+  portfolioBox.appendChild(empty);
+ } else {
+  Object.keys(portfolio).forEach(c=>{
+   let v=portfolio[c]*(prices[c]||0);
+   let row=document.createElement("div");
+   row.style.display="flex";
+   row.style.justifyContent="space-between";
+   row.style.marginBottom="6px";
+   row.innerHTML=`<span>${c}</span><span>$${v.toFixed(2)}</span>`;
+   portfolioBox.appendChild(row);
+  });
+ }
+
+ d.appendChild(balanceBox);
+ d.appendChild(pnlBox);
+ d.appendChild(portfolioBox);
 }
 
 function setPercent(p){
@@ -255,69 +374,40 @@ function setPercent(p){
 
 let widget;
 function loadChart(){
- if(widget) widget.remove();
- widget=new TradingView.widget({
-  container_id:"chart",
-  autosize:true,
-  symbol:"BINANCE:"+(coinSel.value||"BTCUSDT"),
-  theme:"dark"
- });
+ let container=document.getElementById("chart");
+ container.innerHTML="";
+ let symbol=coinSel.value||"BTCUSDT";
+ setTimeout(()=>{
+  widget=new TradingView.widget({
+   container_id:"chart",
+   autosize:true,
+   symbol:"BINANCE:"+symbol,
+   interval:"5",
+   theme:"dark"
+  });
+ },100);
 }
 
-function login(){
- let u=document.getElementById("username").value.trim();
- if(!u)return;
- currentUser=u;
- localStorage.setItem("user",u);
- document.getElementById("loginScreen").style.display="none";
- document.getElementById("userLabel").innerText=u;
- load();
+coinSel.addEventListener("change",function(){
+ update();
+ loadChart();
+});
+
+function tab(id,el){
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".navbar button").forEach(b=>b.classList.remove("active"));
+ el.classList.add("active");
 }
 
-function loadUser(){
- let u=localStorage.getItem("user");
- if(u){
-  currentUser=u;
-  document.getElementById("loginScreen").style.display="none";
-  document.getElementById("userLabel").innerText=u;
-  load();
- }
-}
+function logout(){ location.reload(); }
+function switchUser(){ location.reload(); }
 
-function save(){
- if(!currentUser)return;
- localStorage.setItem("bal_"+currentUser,balance);
- localStorage.setItem("port_"+currentUser,JSON.stringify(portfolio));
-}
-
-function load(){
- let b=localStorage.getItem("bal_"+currentUser);
- let p=localStorage.getItem("port_"+currentUser);
- if(b) balance=Number(b);
- if(p) portfolio=JSON.parse(p);
-}
-
-function toggleMenu(){
- let m=document.getElementById("menu");
- m.style.display = m.style.display==="block"?"none":"block";
-}
-
-function logout(){
- localStorage.removeItem("user");
- location.reload();
-}
-
-function switchUser(){
- let u=prompt("Enter username");
- if(!u)return;
- localStorage.setItem("user",u);
- location.reload();
-}
-
+// INIT
 loadUser();
 fetchPrices();
 setInterval(fetchPrices,5000);
-setTimeout(loadChart,500);
+setTimeout(()=>loadChart(),500);
 </script>
 </body>
 </html>
