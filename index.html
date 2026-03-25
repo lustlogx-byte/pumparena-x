@@ -1,413 +1,410 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PumpArena X</title>
-<script src="https://s3.tradingview.com/tv.js"></script>
-<style>
-:root{
---bg:#0b0e1a;
---panel:#12162a;
---accent:#7c3aed; /* fire purple */
---accent2:#c084fc;
---text:#f1f1f5;
---sub:#a1a1aa;
-}
-body{
-margin:0;
-background:var(--bg);
-color:var(--text);
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial;
-}
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:16px;
-background:linear-gradient(135deg,#7c3aed,#c084fc);
-color:white;
-font-weight:700;
-font-size:18px;
-letter-spacing:0.5px;
-box-shadow:0 4px 20px rgba(124,58,237,0.4);
-}
-.tab{display:none;padding:12px}
-.active{display:block}
-.panel{
-background:var(--panel);
-border-radius:18px;
-padding:16px;
-margin-bottom:70px;
-box-shadow:0 6px 25px rgba(0,0,0,0.5);
-border:1px solid rgba(124,58,237,0.2);
-}
-.navbar{
-position:fixed;
-bottom:0;
-width:100%;
-display:flex;
-background:#0f1222;
-border-top:1px solid rgba(124,58,237,0.2);
-}
-.navbar button{
-flex:1;
-padding:14px;
-background:none;
-border:none;
-color:var(--sub);
-font-size:13px;
-}
-.navbar button.active{
-color:var(--accent);
-font-weight:600;
-}
-.navbar button{
-flex:1;
-padding:12px;
-background:none;
-border:none;
-color:var(--sub);
-font-size:12px;
-}
-.navbar button.active{
-color:var(--accent);
-font-weight:600;
-}
-.navbar button{flex:1;padding:12px;background:none;border:none;color:#888}
-.navbar button.active{color:var(--accent)}
-.btnRow{display:flex;gap:8px;margin:10px 0}
-.btnRow button{
-flex:1;
-padding:16px;
-border:none;
-border-radius:14px;
-background:#1a1f3a;
-color:white;
-font-weight:600;
-font-size:14px;
-}
-.btnRow button:active{
-transform:scale(0.96);
-opacity:0.85;
-}
-.btnRow button:active{
-transform:scale(0.97);
-opacity:0.8;
-}
-.btnRow button:active{
-transform:scale(0.97);
-opacity:0.9;
-}
-.buy{
-background:linear-gradient(135deg,#22c55e,#4ade80);
-color:black;
-font-weight:700;
-}
-.sell{
-background:linear-gradient(135deg,#ef4444,#f87171);
-color:white;
-font-weight:700;
-}
-.sellAllBtn{
-background:linear-gradient(135deg,#f0b90b,#d9a309);
-color:black;
-width:100%;
-padding:18px;
-border:none;
-border-radius:12px;
-font-weight:bold;
-margin-top:10px;
-margin-bottom:20px; /* added spacing */
-letter-spacing:0.5px;
-}
-.sellAllBtn:active{
-transform:scale(0.96);
-}
-.sell{
-background:linear-gradient(135deg,#f6465d,#d93a50);
-color:white;
-font-weight:bold;
-}
-.sellAllBtn{
-background:linear-gradient(135deg,#f0b90b,#d9a309);
-color:black;
-width:100%;
-padding:18px;
-border:none;
-border-radius:12px;
-font-weight:bold;
-margin-top:10px;
-letter-spacing:0.5px;
-}
-.sellAllBtn:active{
-transform:scale(0.97);
-}
-#chart{height:300px}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>PumpArena X | Pro Trader</title>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        :root {
+            --bg: #05070a;
+            --panel: #111422;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --accent: #8b5cf6;
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --up: #22c55e;
+            --down: #ef4444;
+            --gold: #f0b90b;
+        }
 
-/* MARKETS UI FIX */
-#markets{
- display:flex;
- flex-direction:column;
- gap:10px;
-}
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            padding-bottom: 120px;
+        }
 
-.marketRow{
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:16px;
- background:#0f141b;
- border-radius:14px;
- border:1px solid #1c222b;
- font-size:15px;
- font-weight:600;
-}
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px 20px 15px;
+            background: linear-gradient(to bottom, #0a0c16, transparent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
 
-.marketLeft{
- display:flex;
- flex-direction:column;
-}
+        .brand {
+            font-weight: 900;
+            font-size: 22px;
+            background: linear-gradient(45deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
 
-.marketSymbol{
- font-size:16px;
- font-weight:700;
-}
+        #notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150%);
+            background: var(--accent);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            z-index: 9999;
+            transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+        #notification.show { transform: translateX(-50%) translateY(0); }
 
-.marketPair{
- font-size:11px;
- color:#777;
-}
+        .tab { display: none; padding: 0 16px; animation: slideUp 0.4s ease-out; }
+        .tab.active { display: block; }
 
-.marketPrice{
- font-size:16px;
- font-weight:700;
-}
-</style>
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--panel);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            margin-bottom: 12px;
+            transition: 0.2s;
+        }
+        .list-item:active { transform: scale(0.97); background: rgba(255,255,255,0.08); }
+
+        .price-up { color: var(--up) !important; text-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
+        .price-down { color: var(--down) !important; text-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+
+        select, input {
+            width: 100%;
+            padding: 18px;
+            background: #000;
+            border: 1px solid #2d314d;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 16px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .action-btn { flex: 1; padding: 18px; border: none; border-radius: 16px; font-weight: 800; transition: 0.1s; font-size: 14px; }
+        .action-btn:active { transform: scale(0.95); }
+        .buy { background: var(--up); color: #000; }
+        .sell { background: var(--down); color: #fff; }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            background: rgba(10, 12, 22, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 0 calc(20px + env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+
+        .nav-item { flex: 1; background: none; border: none; color: var(--text-dim); font-size: 9px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-item.active { color: var(--accent); }
+        .dot { width: 4px; height: 4px; background: transparent; border-radius: 50%; }
+        .active .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    </style>
 </head>
 <body>
 
+    <div id="notification">Target Hit! 🚀</div>
 
+    <header>
+        <div class="brand">PUMP ARENA X</div>
+        <div id="userLabel" style="font-size: 11px; border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px;">PRO TRADER</div>
+    </header>
 
-<header>
-<div>PumpArena X</div>
-<div id="userLabel" onclick="toggleMenu()" style="cursor:pointer;font-size:12px;"></div>
-</header>
+    <div id="marketsTab" class="tab active">
+        <h2 style="margin:0 0 20px 0;">Markets</h2>
+        <div id="marketList"></div>
+    </div>
 
-<div id="menu" style="display:none;position:absolute;right:10px;top:50px;background:#11161c;padding:10px;border-radius:10px;">
-<div onclick="switchUser()">Switch User</div>
-<div onclick="logout()">Logout</div>
-</div>
+    <div id="chartTab" class="tab">
+        <div class="card" style="height: 450px; padding: 8px;">
+            <div id="chart-container" style="height: 100%; border-radius: 16px; overflow: hidden;"></div>
+        </div>
+    </div>
 
-<div id="marketsTab" class="tab active"><div class="panel" id="markets"></div></div>
-<div id="chartTab" class="tab"><div class="panel"><div id="chart"></div></div></div>
+    <div id="tradeTab" class="tab">
+        <div class="card">
+            <select id="coinSelect" onchange="syncCoinSelection(this.value)"></select>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="action-btn buy" onclick="executeTrade('buy')">BUY</button>
+                <button class="action-btn sell" onclick="executeTrade('sell')">SELL</button>
+            </div>
+            <input id="qtyInput" type="number" placeholder="Enter Amount" oninput="updateUI()">
+            
+            <div style="display:flex; gap:8px;">
+                <button onclick="setPercent(25)" style="flex:1; padding:10px; background:#1e233d; border:none; color:#fff; border-radius:10px;">25%</button>
+                <button onclick="setPercent(100)" style="flex:1; padding:10px; background:#1e233d; border:none; color:#fff; border-radius:10px;">MAX</button>
+            </div>
+        </div>
 
-<div id="tradeTab" class="tab">
-<div class="panel">
-<select id="coin"></select>
-<div class="btnRow">
-<button onclick="setPercent(25)">25%</button>
-<button onclick="setPercent(50)">50%</button>
-<button onclick="setPercent(100)">100%</button>
-</div>
-<input id="qty" type="number" value="1">
-<div class="btnRow">
-<button class="buy" onclick="buy()">Buy</button>
-<button class="sell" onclick="sell()">Sell</button>
-</div>
-<button class="sellAllBtn" onclick="sellAll()">Sell All</button>
-<div class="panel" style="margin-top:16px;">
-  <div style="font-size:13px;color:var(--sub)">Trade Summary</div>
-  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:15px;">
-    <span>Price</span>
-    <span>$<span id="price"></span></span>
-  </div>
-  <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:15px;font-weight:600;">
-    <span>Total</span>
-    <span>$<span id="total"></span></span>
-  </div>
-</div>
-</div>
-</div>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span style="color:var(--text-dim)">Market Price</span>
+                <span id="displayPrice" style="font-family:monospace; font-weight:700;">$0.00</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:18px;">
+                <span>Order Total</span>
+                <span id="displayTotal" style="color:var(--accent)">$0.00</span>
+            </div>
+        </div>
+    </div>
 
-<div id="portfolioTab" class="tab"><div class="panel" id="assets"></div></div>
+    <div id="portfolioTab" class="tab">
+        <div id="balanceDisplay"></div>
+        <div class="card">
+            <h3 style="margin-top:0; font-size:16px;">Activity History</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
 
-<div class="navbar">
-<button onclick="tab('marketsTab',this)" class="active">Markets</button>
-<button onclick="tab('chartTab',this)">Chart</button>
-<button onclick="tab('tradeTab',this)">Trade</button>
-<button onclick="tab('portfolioTab',this)">Assets</button>
-</div>
+    <div id="settingsTab" class="tab">
+        <h2 style="margin:0 0 20px 0;">Admin Panel</h2>
 
-<script>
-let prices={}, balance=100, portfolio={};
-const coins=["BTCUSDT","ETHUSDT","SOLUSDT"];
-const coinSel=document.getElementById("coin");
-const qty=document.getElementById("qty");
+        <div class="card">
+            <h3 style="margin-top:0; font-size:16px;">Wallet Settings</h3>
+            <label style="font-size:11px; color:var(--text-dim); display:block; margin-bottom:8px;">SET CUSTOM BALANCE ($)</label>
+            <div style="display:flex; gap:10px;">
+                <input id="adminBalanceInput" type="number" placeholder="e.g. 50000" style="margin:0;">
+                <button onclick="adminSetBalance()" style="background:var(--accent); color:white; border:none; border-radius:16px; padding:0 20px; font-weight:bold;">SET</button>
+            </div>
+        </div>
 
-coins.forEach(c=>{
- let o=document.createElement("option");
- o.value=c; o.text=c;
- coinSel.appendChild(o);
-});
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.2);">
+            <h3 style="margin-top:0; font-size:16px; color:var(--down);">Danger Zone</h3>
+            <p style="font-size:12px; color:var(--text-dim); margin-top:0;">Resetting will wipe all open assets, order histories, and set your balance back to $10,000.</p>
+            <button onclick="adminResetApp()" class="action-btn" style="background:var(--down); color:white; width:100%;">FACTORY RESET APP</button>
+        </div>
+    </div>
 
-function loadUser(){
- document.getElementById("userLabel").innerText = localStorage.getItem("user") || "guest";
-}
+    <nav class="navbar">
+        <button class="nav-item active" onclick="switchTab('marketsTab', this)">MARKETS<div class="dot"></div></button>
+        <button class="nav-item" onclick="switchTab('chartTab', this)">CHART<div class="dot"></div></button>
+        <button class="nav-item" onclick="switchTab('tradeTab', this)">TRADE<div class="dot"></div></button>
+        <button class="nav-item" onclick="switchTab('portfolioTab', this)">ASSETS<div class="dot"></div></button>
+        <button class="nav-item" onclick="switchTab('settingsTab', this)">ADMIN<div class="dot"></div></button>
+    </nav>
 
-async function fetchPrices(){
- try{
-  let r=await fetch("https://api.binance.com/api/v3/ticker/price");
-  let d=await r.json();
-  d.forEach(x=>{ if(coins.includes(x.symbol)) prices[x.symbol]=Number(x.price); });
-  renderMarkets();
-  update();
- }catch(e){ console.log(e); }
-}
+    <script>
+        // Setup initial default state
+        const DEFAULT_STATE = {
+            balance: 10000.00,
+            portfolio: {},
+            history: [],
+            activeSymbol: "BTCUSDT"
+        };
 
-function renderMarkets(){
- let m=document.getElementById("markets");
- m.innerHTML="";
- coins.forEach(c=>{
-  let row=document.createElement("div");
-  row.className="marketRow";
-  row.innerHTML=`
-   <div class="marketLeft">
-    <div class="marketSymbol">${c}</div>
-    <div class="marketPair">USDT</div>
-   </div>
-   <div class="marketPrice">$${(prices[c]||0).toFixed(2)}</div>
-  `;
-  row.onclick=()=>{coinSel.value=c;update();loadChart();};
-  m.appendChild(row);
- });
-}
+        let state = JSON.parse(localStorage.getItem('pumpArenaState')) || {...DEFAULT_STATE};
 
-function update(){
- let p=prices[coinSel.value]||0;
- document.getElementById("price").innerText=p.toFixed(2);
- let t=Number(qty.value||0)*p;
- document.getElementById("total").innerText=t.toFixed(2);
- renderAssets();
-}
+        let lastPrices = {};
+        const coins = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT"];
 
-function buy(){
- let c=coinSel.value,q=Number(qty.value),p=prices[c];
- if(balance>=q*p){portfolio[c]=(portfolio[c]||0)+q;balance-=q*p;update();}
-}
+        function init() {
+            const select = document.getElementById("coinSelect");
+            select.innerHTML = ""; // Clear
+            coins.forEach(c => select.add(new Option(c, c)));
+            select.value = state.activeSymbol;
+            
+            fetchPrices();
+            setInterval(fetchPrices, 3000);
+            renderHistory();
+            loadChart();
+        }
 
-function sell(){
- let c=coinSel.value,q=Number(qty.value),p=prices[c];
- if((portfolio[c]||0)>=q){portfolio[c]-=q;balance+=q*p;update();}
-}
+        async function fetchPrices() {
+            try {
+                const res = await fetch("https://api.binance.com/api/v3/ticker/price");
+                const data = await res.json();
+                const newPrices = {};
+                data.forEach(item => { if(coins.includes(item.symbol)) newPrices[item.symbol] = parseFloat(item.price); });
+                
+                renderMarkets(newPrices);
+                lastPrices = {...newPrices};
+                updateUI();
+            } catch (e) { console.error("Price API Error"); }
+        }
 
-function sellAll(){
- let c=coinSel.value,q=portfolio[c]||0,p=prices[c];
- if(q>0){balance+=q*p;delete portfolio[c];update();}
-}
+        function renderMarkets(prices) {
+            const list = document.getElementById("marketList");
+            list.innerHTML = coins.map(c => {
+                const p = prices[c] || 0;
+                const trend = p > lastPrices[c] ? 'price-up' : (p < lastPrices[c] ? 'price-down' : '');
+                return `
+                    <div class="list-item" onclick="syncCoinSelection('${c}')">
+                        <div>
+                            <div style="font-weight:800;">${c.replace('USDT','')}</div>
+                            <div style="font-size:10px; color:var(--text-dim)">Binance Live</div>
+                        </div>
+                        <div class="${trend}" style="font-family:monospace; font-weight:700;">$${p.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-function renderAssets(){
- let d=document.getElementById("assets");
- d.innerHTML="";
+        function syncCoinSelection(symbol) {
+            state.activeSymbol = symbol;
+            document.getElementById("coinSelect").value = symbol;
+            loadChart();
+            
+            if (document.getElementById("marketsTab").classList.contains("active")) {
+                switchTab('chartTab', document.querySelectorAll('.nav-item')[1]);
+            }
+            save();
+        }
 
- // Balance section
- let balanceBox=document.createElement("div");
- balanceBox.className="panel";
- balanceBox.innerHTML=`<div style="font-size:14px;color:var(--sub)">Balance</div>
- <div style="font-size:24px;font-weight:700;margin-top:6px">$${balance.toFixed(2)}</div>`;
+        function loadChart() {
+            const container = document.getElementById("chart-container");
+            container.innerHTML = "";
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": "BINANCE:" + state.activeSymbol,
+                "interval": "30",
+                "theme": "dark",
+                "style": "1",
+                "hide_top_toolbar": true,
+                "container_id": "chart-container"
+            });
+        }
 
- // PNL section
- let pnlBox=document.createElement("div");
- pnlBox.className="panel";
+        function executeTrade(type) {
+            const sym = state.activeSymbol;
+            const price = lastPrices[sym];
+            const qty = parseFloat(document.getElementById("qtyInput").value) || 0;
+            const cost = qty * price;
 
- let totalValue=0;
- Object.keys(portfolio).forEach(c=>{
-  totalValue += (portfolio[c]||0)*(prices[c]||0);
- });
+            if (qty <= 0) return;
 
- let startingBalance = 100;
- let currentEquity = balance + totalValue;
- let pnl = currentEquity - startingBalance;
- let pnlPercent = ((pnl/startingBalance)*100);
- let pnlColor = pnl >= 0 ? "#22c55e" : "#ef4444";
+            if (type === 'buy' && state.balance >= cost) {
+                state.balance -= cost;
+                state.portfolio[sym] = (state.portfolio[sym] || 0) + qty;
+                logHistory('buy', sym, qty, price);
+                notify(`Bought ${qty} ${sym.replace('USDT','')}`);
+            } else if (type === 'sell' && (state.portfolio[sym] || 0) >= qty) {
+                state.balance += cost;
+                state.portfolio[sym] -= qty;
+                logHistory('sell', sym, qty, price);
+                notify(`Sold ${qty} ${sym.replace('USDT','')}`);
+            } else {
+                notify("Insufficient funds or assets!");
+            }
+            document.getElementById("qtyInput").value = "";
+            save();
+        }
 
- pnlBox.innerHTML=`
- <div style="font-size:14px;color:var(--sub)">Profit / Loss</div>
- <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-   <div style="font-size:22px;font-weight:700;color:${pnlColor}">$${pnl.toFixed(2)}</div>
-   <div style="font-size:14px;color:${pnlColor}">${pnlPercent.toFixed(2)}%</div>
- </div>
- `;
+        function logHistory(type, symbol, qty, price) {
+            state.history.unshift({ type, symbol, qty, price, time: new Date().toLocaleTimeString() });
+            if (state.history.length > 10) state.history.pop();
+            renderHistory();
+        }
 
- // Portfolio section
- let portfolioBox=document.createElement("div");
- portfolioBox.className="panel";
- portfolioBox.innerHTML=`<div style="font-size:14px;color:var(--sub);margin-bottom:8px">Your Assets</div>`;
+        function renderHistory() {
+            document.getElementById("historyList").innerHTML = state.history.length ? state.history.map(h => `
+                <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px;">
+                    <span style="color:${h.type==='buy'?'var(--up)':'var(--down)'}; font-weight:bold;">${h.type.toUpperCase()} ${h.symbol.replace('USDT','')}</span>
+                    <span style="font-weight:600;">$${(h.qty*h.price).toFixed(2)}</span>
+                </div>
+            `).join('') : '<div style="color:var(--text-dim); text-align:center; padding:20px;">No trades yet</div>';
+        }
 
- if(Object.keys(portfolio).length===0){
-  let empty=document.createElement("div");
-  empty.style.color="var(--sub)";
-  empty.innerText="No assets yet";
-  portfolioBox.appendChild(empty);
- } else {
-  Object.keys(portfolio).forEach(c=>{
-   let v=portfolio[c]*(prices[c]||0);
-   let row=document.createElement("div");
-   row.style.display="flex";
-   row.style.justifyContent="space-between";
-   row.style.marginBottom="6px";
-   row.innerHTML=`<span>${c}</span><span>$${v.toFixed(2)}</span>`;
-   portfolioBox.appendChild(row);
-  });
- }
+        function updateUI() {
+            const p = lastPrices[state.activeSymbol] || 0;
+            document.getElementById("displayPrice").innerText = `$${p.toLocaleString()}`;
+            const qty = parseFloat(document.getElementById("qtyInput").value) || 0;
+            document.getElementById("displayTotal").innerText = `$${(qty * p).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 
- d.appendChild(balanceBox);
- d.appendChild(pnlBox);
- d.appendChild(portfolioBox);
-}
+            let totalVal = 0;
+            Object.keys(state.portfolio).forEach(k => totalVal += (state.portfolio[k] * (lastPrices[k] || 0)));
+            document.getElementById("balanceDisplay").innerHTML = `
+                <div class="card" style="background: linear-gradient(135deg, #1e233d, #05070a);">
+                    <div style="color:var(--text-dim); font-size:12px; letter-spacing:1px;">PORTFOLIO VALUE</div>
+                    <div style="font-size:32px; font-weight:900; margin:8px 0;">$${(state.balance + totalVal).toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
+                    <div style="font-size:12px;"><span style="color:var(--text-dim)">Wallet:</span> $${state.balance.toFixed(2)}</div>
+                </div>
+            `;
+        }
 
-function setPercent(p){
- let price=prices[coinSel.value]||1;
- qty.value=((balance*(p/100))/price).toFixed(4);
- update();
-}
+        function notify(msg) {
+            const n = document.getElementById("notification");
+            n.innerText = msg; n.classList.add("show");
+            setTimeout(() => n.classList.remove("show"), 3000);
+        }
 
-let widget;
-function loadChart(){
- let container=document.getElementById("chart");
- container.innerHTML="";
- let symbol=coinSel.value||"BTCUSDT";
- setTimeout(()=>{
-  widget=new TradingView.widget({
-   container_id:"chart",
-   autosize:true,
-   symbol:"BINANCE:"+symbol,
-   interval:"5",
-   theme:"dark"
-  });
- },100);
-}
+        function save() { localStorage.setItem('pumpArenaState', JSON.stringify(state)); updateUI(); }
 
-coinSel.addEventListener("change",function(){
- update();
- loadChart();
-});
+        function switchTab(id, el) {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+            el.classList.add("active");
+            if(id === 'chartTab') loadChart();
+        }
 
-function tab(id,el){
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
- document.getElementById(id).classList.add("active");
- document.querySelectorAll(".navbar button").forEach(b=>b.classList.remove("active"));
- el.classList.add("active");
-}
+        function setPercent(p) {
+            const price = lastPrices[state.activeSymbol] || 1;
+            document.getElementById("qtyInput").value = ((state.balance * (p/100)) / price).toFixed(4);
+            updateUI();
+        }
 
-function logout(){ location.reload(); }
-function switchUser(){ location.reload(); }
+        // ================= ADMIN CONTROLS =================
+        function adminSetBalance() {
+            const customAmt = parseFloat(document.getElementById("adminBalanceInput").value);
+            if (isNaN(customAmt) || customAmt < 0) {
+                notify("Please enter a valid amount!");
+                return;
+            }
+            state.balance = customAmt;
+            document.getElementById("adminBalanceInput").value = "";
+            notify(`Balance updated to $${customAmt.toLocaleString()}!`);
+            save();
+        }
 
-// INIT
-loadUser();
-fetchPrices();
-setInterval(fetchPrices,5000);
-setTimeout(()=>loadChart(),500);
-</script>
+        function adminResetApp() {
+            if (confirm("Are you sure you want to reset your account? This will wipe your clean slate!")) {
+                state = {
+                    balance: 10000.00,
+                    portfolio: {},
+                    history: [],
+                    activeSymbol: "BTCUSDT"
+                };
+                save();
+                renderHistory();
+                notify("Account reset to Factory Default! 🧼");
+                
+                // Jump to markets to see your clean slate
+                switchTab('marketsTab', document.querySelectorAll('.nav-item')[0]);
+            }
+        }
+
+        init();
+    </script>
 </body>
 </html>
